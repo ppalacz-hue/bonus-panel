@@ -15,23 +15,22 @@ body {
     justify-content:center;
     align-items:center;
     height:100vh;
+    overflow:hidden;
 }
 
-.logo-bar {
+/* SUBTELNA MAPA */
+body::before{
+    content:"";
     position:absolute;
-    bottom:0;
-    width:100%;
-    background:#0f1f26;
-    color:white;
-    padding:15px 40px;
-    font-size:22px;
-    font-weight:bold;
+    width:120%;
+    height:120%;
+    background:url('mapa.png') center center no-repeat;
+    background-size:cover;
+    opacity:0.06;
+    z-index:0;
 }
 
-.logo-bar span {
-    color:#ff5a00;
-}
-
+/* PANEL */
 .panel {
     background:white;
     width:900px;
@@ -41,6 +40,7 @@ body {
     justify-content:space-between;
     border-radius:8px;
     box-shadow:0 10px 25px rgba(0,0,0,0.3);
+    z-index:2;
 }
 
 .left-icon, .right-icon {
@@ -80,12 +80,23 @@ button {
     color:white;
     border-radius:6px;
     cursor:pointer;
+    transition:0.2s;
 }
 
 button:hover {
     background:#e04e00;
 }
 
+.reset-btn {
+    background:#0f1f26;
+    margin-left:15px;
+}
+
+.reset-btn:hover {
+    background:#162f3a;
+}
+
+/* WYNIKI */
 .results {
     margin-top:40px;
     background:white;
@@ -94,6 +105,7 @@ button:hover {
     width:900px;
     display:none;
     box-shadow:0 8px 20px rgba(0,0,0,0.3);
+    z-index:2;
 }
 
 .results h2 {
@@ -107,6 +119,29 @@ button:hover {
     margin-top:20px;
     font-size:20px;
 }
+
+.note {
+    margin-top:25px;
+    font-size:14px;
+    color:#555;
+}
+
+/* LOGO BAR */
+.logo-bar {
+    position:absolute;
+    bottom:0;
+    width:100%;
+    background:#0f1f26;
+    padding:15px 0;
+    display:flex;
+    justify-content:center;
+    align-items:center;
+    z-index:2;
+}
+
+.logo-bar img {
+    height:32px;
+}
 </style>
 </head>
 
@@ -117,7 +152,10 @@ button:hover {
 
     <div class="center-input">
         <input type="text" id="employeeId" placeholder="ZESKANUJ / WPISZ ID">
-        <button onclick="checkBonus()">SPRAWDŹ BONUS</button>
+        <div>
+            <button onclick="checkBonus()">SPRAWDŹ BONUS</button>
+            <button class="reset-btn" onclick="resetPanel()">ZERUJ</button>
+        </div>
     </div>
 
     <div class="right-icon">⚡</div>
@@ -131,10 +169,16 @@ button:hover {
         <div><strong>Czas w procesie:</strong> <span id="time"></span></div>
         <div><strong>Data generowania:</strong> <span id="date"></span></div>
     </div>
+
+    <div class="note">
+        Wielkość bonusu uzależniona jest od godzin w danym procesie.
+        Podana wartość może różnić się od końcowej.
+        Dziękujemy że jesteś.
+    </div>
 </div>
 
 <div class="logo-bar">
-    AUTODOC <span>PRO</span>
+    <img src="autodoc-logo.png" alt="AUTODOC">
 </div>
 
 <script>
@@ -153,6 +197,8 @@ const employees = {
     }
 };
 
+let timeout;
+
 function checkBonus(){
     const id = document.getElementById("employeeId").value.trim();
     const data = employees[id];
@@ -163,11 +209,20 @@ function checkBonus(){
         document.getElementById("time").innerText = data.time;
         document.getElementById("date").innerText = data.date;
         document.getElementById("resultsBox").style.display = "block";
+
+        clearTimeout(timeout);
+        timeout = setTimeout(resetPanel, 30000);
     } else {
         alert("Nie znaleziono pracownika!");
     }
 
     document.getElementById("employeeId").value = "";
+}
+
+function resetPanel(){
+    document.getElementById("resultsBox").style.display = "none";
+    document.getElementById("employeeId").value = "";
+    clearTimeout(timeout);
 }
 </script>
 
